@@ -104,13 +104,19 @@ void sortOnce() {
   moveServoSlowly(target, POS_CENTER);
 }
 
+// Fires once as soon as D2 is pulled LOW. Will not fire again until the
+// wire is removed from GND and reconnected.
 bool triggerPressed() {
-  if (digitalRead(PIN_TRIGGER) != LOW) return false;
-  delay(DEBOUNCE_MS);
-  if (digitalRead(PIN_TRIGGER) != LOW) return false;
-  while (digitalRead(PIN_TRIGGER) == LOW) { /* wait for release */ }
-  delay(DEBOUNCE_MS);
-  return true;
+  static bool wasLow = false;
+  bool low = (digitalRead(PIN_TRIGGER) == LOW);
+  if (low) {
+    delay(DEBOUNCE_MS);
+    low = (digitalRead(PIN_TRIGGER) == LOW);
+  }
+  bool fire = low && !wasLow;
+  wasLow = low;
+  if (fire) Serial.println(F("trigger: D2 -> GND"));
+  return fire;
 }
 
 void handleSerial() {
