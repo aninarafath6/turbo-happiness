@@ -99,9 +99,12 @@ void sortOnce() {
   Serial.println(wet ? F("WET") : F("DRY"));
 
   uint8_t target = wet ? POS_WET : POS_DRY;
+  Serial.print(F("servo -> "));
+  Serial.println(target);
   moveServoSlowly(POS_CENTER, target);
   delay(DUMP_HOLD_MS);
   moveServoSlowly(target, POS_CENTER);
+  Serial.println(F("servo -> centre, cycle done"));
 }
 
 // Fires once as soon as D2 is pulled LOW. Will not fire again until the
@@ -141,10 +144,14 @@ void handleSerial() {
         break;
       }
       case 'w': case 'W':  // manual servo test
+        Serial.println(F("servo -> WET side"));
         moveServoSlowly(POS_CENTER, POS_WET); delay(500); moveServoSlowly(POS_WET, POS_CENTER);
+        Serial.println(F("servo -> centre"));
         break;
       case 'd': case 'D':
+        Serial.println(F("servo -> DRY side"));
         moveServoSlowly(POS_CENTER, POS_DRY); delay(500); moveServoSlowly(POS_DRY, POS_CENTER);
+        Serial.println(F("servo -> centre"));
         break;
       default:
         break;
